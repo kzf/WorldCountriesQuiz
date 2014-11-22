@@ -1,10 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" manifest="./cache.manifest">
   <head>
     <meta charset="utf-8">
     <title>WorldCountriesQuiz</title>
     <meta name="description" content="">
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="shortcut icon" href="/favicon.ico">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(.) styles/vendor.css -->
@@ -17,6 +18,10 @@
     <!-- build:js scripts/vendor/modernizr.js -->
     <script src="bower_components/modernizr/modernizr.js"></script>
     <!-- endbuild -->
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://d3js.org/queue.v1.min.js"></script>
+    <script src="http://d3js.org/topojson.v1.min.js"></script>
+
 
   </head>
   <body>
@@ -65,15 +70,76 @@
 
     </div>-->
 
-    <div class="container">
-      <div class="header">
-        <h1>World Countries Quiz</h1>
-      </div>
+    <div class="page hidden-page" id="quiz_page">
+      <header class="top-header">
+        <h1 class="ui-title">World Countries Quiz</h1>
+      </header>
 
-      <div class="worldmap">
-        <div class="worldmapSmall">
+      <div class="main-display">
+        <div class="worldmap">
+          <div class="worldmap-inset">
+          </div>
+        </div>
+        <div class="correct-answer">
+          <h2 class="answer-response">Correct!</h2>
+        </div>
+        <div class="incorrect-answer">
+          <h2 class="answer-response">
+            Wrong Answer!<br>
+            <span class="correct-country">Albania</span>
+          </h2>
         </div>
       </div>
+
+      <div class="inputs">
+        <div id="country_inputs" class="row-input">
+          <input id="country_input" class="country-input" type="text">
+          <button id="submit_country" class="submit-button">Apply</button>
+        </div>
+        <div id="next_question" class="row-input">
+          <button id="next_question_button" class="full-row-button">Next Question</button>
+        </div>
+      </div>
+
+      <div class="progress-indicator">
+        <span class="current-question">
+          -
+        </span>/
+        <span class="total-questions">
+          -
+        </span>
+      </div>
+
+      <footer class="ui-bottom-nav">
+        <button class="home-button">Home</button>
+      </footer>
+    </div>
+
+    <div class="page" id="menu_page">
+      <header class="top-header">
+        <h1 class="ui-title">World Countries Quiz</h1>
+      </header>
+
+      <div class="main-display">
+        <button id="random_quiz" class="main-menu-button full-row-button">Random Quiz</button>
+        <button id="view_stats" class="main-menu-button full-row-button" disabled>Stats</button>
+        <button id="swot_up" class="main-menu-button full-row-button">Swot Up</button>
+      </div>
+    </div>
+
+    <div class="page hidden-page" id="stats_page">
+      <header class="top-header">
+        <h1 class="ui-title">Stats</h1>
+      </header>
+
+      <div class="page-body">
+        <ul id="stats_list" class="stats-list">
+        </ul>
+      </div>
+
+      <footer class="ui-bottom-nav">
+        <button class="home-button">Home</button>
+      </footer>
     </div>
 
 
@@ -95,118 +161,7 @@
     <!-- endbower -->
     <!-- endbuild -->
 
-    <script src="http://d3js.org/d3.v3.min.js"></script>
-    <script src="http://d3js.org/queue.v1.min.js"></script>
-    <script src="http://d3js.org/topojson.v1.min.js"></script>
-    <script>
 
-    var WIDTH = 960,
-        HEIGHT = 500;
-
-    var projection = d3.geo.orthographic()
-        .scale(250)
-        .clipAngle(90);
-
-    var canvas = d3.select(".worldmap").append("canvas")
-        .attr("width", WIDTH)
-        .attr("height", HEIGHT);
-
-    var c = canvas.node().getContext("2d");
-
-    var canvas2 = d3.select(".worldmapSmall").append("canvas")
-        .attr("width", 140)
-        .attr("height", 140);
-
-    var c2 = canvas2.node().getContext("2d");
-
-    var path = d3.geo.path()
-        .projection(projection)
-        .context(c);
-
-    var path2 = d3.geo.path()
-        .projection(projection)
-        .context(c2);
-
-    var title = d3.select("h1");
-
-    queue()
-        .defer(d3.json, "./data/world-110m.json")
-        .defer(d3.tsv, "./data/world-country-names.tsv")
-        .await(ready);
-
-    function ready(error, world, names) {
-      var globe = {type: "Sphere"},
-          land = topojson.feature(world, world.objects.land),
-          countries = topojson.feature(world, world.objects.countries).features,
-          borders = topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }),
-          i = -1,
-          n = countries.length;
-
-      countries = countries.filter(function(d) {
-        return names.some(function(n) {
-          if (d.id == n.id) return d.name = n.name;
-        });
-      }).sort(function(a, b) {
-        return a.name.localeCompare(b.name);
-      });
-
-    //   (function transition() {
-    //     d3.transition()
-    //         .duration(1250)
-    //         .each("start", function() {
-    //           title.text(countries[i = (i + 1) % n].name);
-    //         })
-    //         .tween("rotate", function() {
-    //           var p = d3.geo.centroid(countries[i]),
-    //               r = d3.interpolate(projection.rotate(), [-p[0], -p[1]]);
-    //           return function(t) {
-    //             projection.rotate(r(1));
-    //             c.clearRect(0, 0, width, height);
-    //             c.fillStyle = "#bbb", c.beginPath(), path(land), c.fill();
-    //             c.fillStyle = "#f00", c.beginPath(), path(countries[i]), c.fill();
-    //             c.strokeStyle = "#fff", c.lineWidth = .5, c.beginPath(), path(borders), c.stroke();
-    //             c.strokeStyle = "#000", c.lineWidth = 2, c.beginPath(), path(globe), c.stroke();
-    //           };
-    //         })
-    //       .transition()
-    //         .each("end", transition);
-    //   })();
-    // }
-
-      setInterval(function() {
-        var country = Math.floor(Math.random()*n);
-        title.text(countries[country].name);
-
-        var p = d3.geo.centroid(countries[country]);
-
-        projection.rotate([-p[0], -p[1]]);
-        projection.scale(68);
-        projection.translate([70, 70]);
-
-        c2.clearRect(0, 0, 140, 140);
-        c2.strokeStyle = "#000", c2.lineWidth = 2, c2.beginPath(), path2(globe), c2.stroke(), c2.fillStyle = "#fff", c2.fill();
-        c2.fillStyle = "#bbb", c2.beginPath(), path2(land), c2.fill();
-        c2.fillStyle = "#f00", c2.beginPath(), path2(countries[country]), c2.fill();
-        c2.strokeStyle = "#fff", c2.lineWidth = .5, c2.beginPath(), path2(borders), c2.stroke();
-
-        projection.translate([WIDTH/2, HEIGHT/2]);
-        projection.scale(1);
-
-        var b = path.bounds(countries[country]);
-        var w1 = Math.abs(b[1][0]-b[0][0])/WIDTH;
-        var w2 = Math.abs(b[1][1]-b[0][1])/HEIGHT;
-        projection.scale(Math.min(1000, .45/(Math.max(w1, w2))));
-
-        c.clearRect(0, 0, WIDTH, HEIGHT);
-        c.fillStyle = "#bbb", c.beginPath(), path(land), c.fill();
-        c.fillStyle = "#f00", c.beginPath(), path(countries[country]), c.fill();
-        c.strokeStyle = "#fff", c.lineWidth = .5, c.beginPath(), path(borders), c.stroke();
-        c.strokeStyle = "#000", c.lineWidth = 2, c.beginPath(), path(globe), c.stroke();
-
-      }, 500);
-    }
-
-    </script>
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
     <script>
@@ -217,6 +172,7 @@
       r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
       ga('create','UA-XXXXX-X');ga('send','pageview');
     </script>
+    <script src="./data/jquery.autocomplete.min.js"></script>
 
         <!-- build:js({app,.tmp}) scripts/main.js -->
         <script src="scripts/main.js"></script>

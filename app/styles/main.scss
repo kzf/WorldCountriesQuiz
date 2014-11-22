@@ -3,6 +3,8 @@ $icon-font-path: "../bower_components/bootstrap-sass-official/assets/fonts/boots
 @import "bootstrap-sass-official/assets/stylesheets/_bootstrap.scss";
 // endbower
 
+* { box-sizing: border-box; }
+
 .browsehappy {
   margin: 0.2em 0;
   background: #ccc;
@@ -10,95 +12,221 @@ $icon-font-path: "../bower_components/bootstrap-sass-official/assets/fonts/boots
   padding: 0.2em 0;
 }
 
-/* Space out content a bit */
-body {
-  padding-top: 20px;
-  padding-bottom: 20px;
+body, h1 {
+  padding: 0;
+  margin: 0;
 }
 
-/* Everything but the jumbotron gets side spacing for mobile first views */
-.header,
-.marketing,
-.footer {
-  padding-left: 15px;
-  padding-right: 15px;
+.page {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
-/* Custom page header */
-.header {
-  border-bottom: 1px solid #e5e5e5;
-
-  /* Make the masthead heading the same height as the navigation */
-  h3 {
-    margin-top: 0;
-    margin-bottom: 0;
-    line-height: 40px;
-    padding-bottom: 19px;
-  }
+.hidden-page {
+  display: none;
 }
 
-/* Custom page footer */
-.footer {
-  padding-top: 19px;
-  color: #777;
-  border-top: 1px solid #e5e5e5;
-}
-
-.container-narrow > hr {
-  margin: 30px 0;
-}
-
-/* Main marketing message and sign up button */
-.jumbotron {
+.top-header {
+  width: 320px;
+  top: 0;
+  left: 0;
+  height: 40px;
+  background: #D64541;
   text-align: center;
-  border-bottom: 1px solid #e5e5e5;
-  .btn {
-    font-size: 21px;
-    padding: 14px 24px;
-  }
+  border-bottom: 3px solid #96281B;
 }
 
-/* Supporting marketing content */
-.marketing {
-  margin: 40px 0;
-  p + h4 {
-    margin-top: 28px;
+.ui-title {
+  font-size: 1.6em;
+  padding: 5px 0px;
+}
+
+.correct-answer {
+  background: #2ECC71;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 320px;
+  height: 320px;
+  text-align: center;
+}
+.answer-response {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  margin: auto;
+}
+
+.incorrect-answer {
+  background: #D64541;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 320px;
+  height: 320px;
+  text-align: center;
+  color: white;
+}
+
+.page-body {
+  position: relative;
+  width: 320px;
+  margin-bottom: 38px;
+}
+
+.stats-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+  .stats-list li {
+    padding: 2px 6px;
+    margin-bottom: 2px;
+    color: white;
   }
+
+.main-display {
+  position: relative;
+  height: 320px;
+  width: 320px;
+}
+.worldmap {
+  position: relative;
+  height: 320px;
+}
+
+.worldmap-inset {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+}
+
+.country-input {
+  width: 220px;
+  padding: 4px 6px;
+  height: 30px;
+  margin: 0;
+  display: inline-block;
+}
+
+.row-input {
+  width: 320px;
+}
+
+.full-row-button {
+  width: 100%;
+  height: 30px;
+  border: none;
+  background: #D64541;
+  display: inline-block;
+  box-shadow: inset -2px -2px 2px 0px darkred;
+  color: white;
+}
+  .full-row-button:active {
+    background: darkred;
+  }
+  .full-row-button:disabled {
+    background: #999999;
+    box-shadow: inset -2px -2px 2px 0px #333333;
+  }
+
+.submit-button {
+  width: 100px;
+  height: 30px;
+  border: none;
+  background: #D64541;
+  display: inline-block;
+  margin-left: -4px;
+  box-shadow: inset -2px -2px 2px 0px darkred;
+  color: white;
+}
+  .submit-button:active {
+    background: darkred;
+  }
+
+.home-button {
+  width: 100px;
+  height: 30px;
+  border: none;
+  background: #D64541;
+  display: inline-block;
+  box-shadow: inset -2px -2px 2px 0px darkred;
+  color: white;
+}
+  .home-button:active {
+    background: darkred;
+  }
+
+.main-menu-button {
+  height: 50px;
+  margin-top: 20px;
+}
+
+.progress-indicator {
+  padding: 8px 0px;
+  text-align: center;
+  
+  background: linear-gradient(to right, #26A65B 0%, #C0392B 0%, #C0392B 0%, #cccccc 0%);
+}
+
+.autocomplete-suggestions {
+  background: #ffffff;
+  border: 1px solid #cccccc;
+}
+.autocomplete-suggestion {
+  color: #4183D7;
+  font-size: 1.3em;
+  padding: 0px 6px;
+  border-bottom: 1px solid lighten(#4183D7, 40%);
+}
+
+.ui-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  height: 38px;
+  padding: 4px 0px;
+  text-align: center;
+  width: 320px;
+  background: grey;
 }
 
 /* Responsive: Portrait tablets and up */
-@media screen and (min-width: 768px) {
-  .container {
-    max-width: 960px;
-  }
+// @media screen and (min-width: 768px) {
+//   .container {
+//     max-width: 960px;
+//   }
 
-  /* Remove the padding we set earlier */
-  .header,
-  .marketing,
-  .footer {
-    padding-left: 0;
-    padding-right: 0;
-  }
+//   /* Remove the padding we set earlier */
+//   .header,
+//   .marketing,
+//   .footer {
+//     padding-left: 0;
+//     padding-right: 0;
+//   }
 
-  /* Space out the masthead */
-  .header {
-    margin-bottom: 30px;
-  }
+//   /* Space out the masthead */
+//   .header {
+//     margin-bottom: 30px;
+//   }
 
-  /* Remove the bottom border on the jumbotron for visual effect */
-  .jumbotron {
-    border-bottom: 0;
-  }
+//   /* Remove the bottom border on the jumbotron for visual effect */
+//   .jumbotron {
+//     border-bottom: 0;
+//   }
 
 
-  .worldmap {
-    position: relative;
-  }
-  .worldmapSmall {
-    position: absolute;
-    width: 140px;
-    height: 140px;
-    bottom: 0;
-    left: 0;
-  }
-}
+//   .worldmap {
+//     position: relative;
+//   }
+//   .worldmapSmall {
+//     position: absolute;
+//     width: 140px;
+//     height: 140px;
+//     bottom: 0;
+//     left: 0;
+//   }
+// }
