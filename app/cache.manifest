@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Revision 1
+# Revision 2
 /styles/main.css
 /bower_components/modernizr/modernizr.js
 http://d3js.org/d3.v3.min.js
@@ -22,3 +22,14 @@ http://d3js.org/topojson.v1.min.js
 /bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/popover.js
 /data/jquery.autocomplete.min.js
 /scripts/main.js
+/images/touch-icon.png
+/images/WCQ.png
+/styles/animate.min.css
+/data/lettering.js
+/data/textillate.js
+http://fonts.googleapis.com/css?family=Pacifico|Coming+Soon
+/images/scroll_end2.png
+/images/home.png
+/images/home_glow.png
+/images/cross.png
+/images/tick.png

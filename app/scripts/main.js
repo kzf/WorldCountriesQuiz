@@ -57,7 +57,7 @@ WorldGeo.prototype.showCountry = function(country) {
 		var p = d3.geo.centroid(country);
 		self.projection.scale(c.height/2 - 5)
 									 .rotate([-p[0], -p[1]])
-									 .translate([c.height/2, c.height/2]);
+									 .translate([c.width/2, c.height/2]);
 		// Zoom in if required
 		if (c.zoom) {
 			var b = c.path.bounds(country);
@@ -104,18 +104,23 @@ var App = function(world, names) {
 
 	this.statsList = $("#stats_list");
 
+	this.suggestionsContainer = $("#suggestions_container");
+
 	this.init();
 };
 
 App.prototype.init = function() {
+	var $body = $("body"),
+			$worldmapInset = $(".worldmap-inset"),
+			$worldmap = $(".worldmap");
 	var bigCanvas = d3.select(".worldmap")
 										.append("canvas")
-										.attr("width", 320)
-										.attr("height", 320);
+										.attr("width", $body.innerWidth())
+										.attr("height", $worldmap.innerHeight());
 	var smallCanvas = d3.select(".worldmap-inset")
 											.append("canvas")
-											.attr("width", 100)
-											.attr("height", 100);
+											.attr("width", $worldmapInset.innerWidth())
+											.attr("height", $worldmapInset.innerHeight());
 
 	this.geo.loadViews([{
 		ctx: bigCanvas.node().getContext("2d"),
@@ -142,6 +147,7 @@ App.prototype.init = function() {
 		lookup: suggestions,
 		lookupLimit: 4,
 		orientation: 'top',
+		width: '320px',
 		onSelect: function(s) {
 			self.countryInputEl.text(s.data);
 		}
@@ -236,16 +242,26 @@ App.prototype.showStats = function() {
 	this.statsList.empty();
 
 	var stylePercentBG = function(p) {
-		return "linear-gradient(to right, #26A65B " + p + "%, #C0392B " + p + "%)";
+		return "linear-gradient(to right, #78d376 " + p + "%, #f16a28 " + p + "%)";
 	};
 
-	var li;
+	/* Sort stats */
+	var sorted = [];
 	for (var name in stats) {
 		if (stats.hasOwnProperty(name)) {
-			li = $("<li></li>").text(name + " - " + stats[name].correct + "/" + stats[name].total);
-			li.css("background", stylePercentBG(100*stats[name].correct/stats[name].total));
-			this.statsList.append(li);
+			stats[name].name = name;
+			sorted.push(stats[name]);
 		}
+	}
+	sorted.sort(function(a, b) {
+		return (b.correct/b.total) - (a.correct/a.total);
+	});
+
+	var li;
+	for (var i = 0; i < sorted.length; i++) {
+		li = $("<li class='stat-item'></li>").text(sorted[i].name + " - " + sorted[i].correct + "/" + sorted[i].total);
+		li.css("background", stylePercentBG(100*sorted[i].correct/sorted[i].total));
+		this.statsList.append(li);
 	}
 
 	this.statsPage.removeClass("hidden-page");
@@ -274,8 +290,8 @@ App.prototype.startQuiz = function(questions) {
 App.prototype.progressBackground = function() {
 	var p = 100*this.totalCorrect/this.questions.length;
 	var b = 100*(this.currentQuestion-1)/this.questions.length;
-	return "linear-gradient(to right, #26A65B " + p + "%, #C0392B " + p + 
-					"%, #C0392B " + b + "%, #cccccc " + b + "%)";
+	return "linear-gradient(to right, #78d376 " + p + "%, #f16a28 " + p + 
+					"%, #f16a28 " + b + "%, #81480c " + b + "%)";
 };
 
 App.prototype.showNextQuizQuestion = function() {
@@ -291,6 +307,8 @@ App.prototype.showNextQuizQuestion = function() {
 		this.progressIndicatorEl.css("background", this.progressBackground());
 		this.countryInputEl.val(""); 
 		//this.countryInputEl.focus(); // no good on mobile
+		$(".judgement-icon").removeClass("incorrect").removeClass("correct");
+		this.correctCountryEl.hide();
 	}
 };
 
@@ -311,11 +329,23 @@ App.prototype.checkAnswer = function() {
 		this.correctAnswerEl.fadeIn();
 		this.totalCorrect++;
 		this.results[this.correctAnswer] = true;
+		$(".judgement-icon").addClass("correct");
 	} else {
-		this.correctCountryEl.text(this.questions[this.currentQuestion-1].name);
 		this.incorrectAnswerEl.fadeIn();
 		this.results[this.correctAnswer] = false;
+		$(".judgement-icon").addClass("incorrect");
 	}
+	this.correctCountryEl
+		.html("<div>" + this.questions[this.currentQuestion-1].name + "</div>")
+		.show()
+		.find("div")
+		.textillate({
+			in: {
+				effect: 'bounceIn',
+				delayScale: 2,
+				delay: 40
+			}
+		});
 	this.countryInputsEl.hide();
 	this.nextQuestionEl.show();
 };
